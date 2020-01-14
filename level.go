@@ -3,8 +3,8 @@ package fnlog
 type logLevel int
 
 const (
-	Debuglvl logLevel = iota
-	Tracelvl
+	Tracelvl logLevel = iota
+	Debuglvl
 	Infolvl
 	Warnlvl
 	Errorlvl
@@ -13,8 +13,8 @@ const (
 )
 
 var levelTxt map[logLevel]string = map[logLevel]string{
-	Debuglvl: "debug",
 	Tracelvl: "trace",
+	Debuglvl: "debug",
 	Infolvl:  "info",
 	Warnlvl:  "warn",
 	Errorlvl: "error",

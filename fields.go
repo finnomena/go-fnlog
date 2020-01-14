@@ -2,6 +2,7 @@ package fnlog
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"runtime"
 	"strings"
@@ -57,7 +58,24 @@ func defaultLog(level logLevel) string {
 
 func logAllField(s string, f fields) string {
 	for k, v := range f {
-		s += fmt.Sprintf(`"%v":"%v",`, k, v)
+		switch v.(type) {
+		case int, int8, int16, int32, int64:
+			s += fmt.Sprintf(`"%v":%v,`, k, v)
+		case uint, uint8, uint16, uint32, uint64:
+			s += fmt.Sprintf(`"%v":%v,`, k, v)
+		case float32, float64:
+			s += fmt.Sprintf(`"%v":%v,`, k, v)
+		case error:
+			s += fmt.Sprintf(`"%v":"%v",`, k, v.(error).Error())
+		case string:
+			s += fmt.Sprintf(`"%v":"%v",`, k, v)
+		default:
+			mar, err := json.Marshal(v)
+			if err != nil {
+				break
+			}
+			s += fmt.Sprintf(`"%v":%v,`, k, string(mar))
+		}
 	}
 	return s
 }
