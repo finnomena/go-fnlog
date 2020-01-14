@@ -1,3 +1,3 @@
-module github.com/JamesnaW/go-fnlog
+module github.com/finnomena/go-fnlog
 
 go 1.13
