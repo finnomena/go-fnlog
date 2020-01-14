@@ -17,6 +17,7 @@ func assertLogLevel(t *testing.T, name string, level fnlog.LogLevel) {
 		t.Error(message)
 	}
 }
+
 func TestGetLogLevelShouldBeCorrect(t *testing.T) {
 	assertLogLevel(t, "trace", fnlog.TraceLevel)
 	assertLogLevel(t, "debug", fnlog.DebugLevel)
