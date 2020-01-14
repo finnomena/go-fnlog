@@ -8,13 +8,13 @@ import (
 	"time"
 )
 
+// LoggingMiddleware - logging middleware
 func LoggingMiddleware() func(http.Handler) http.Handler {
-
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			now := time.Now()
 			traceID := fmt.Sprintf("%v%v", now.UnixNano(), rand.Int())
-			ctx := context.WithValue(r.Context(), "request_id", traceID)
+			ctx := context.WithValue(r.Context(), "request_id", traceID) // nolint
 			r = r.WithContext(ctx)
 
 			logctx[ctx] = make(map[string]interface{})
@@ -28,7 +28,7 @@ func LoggingMiddleware() func(http.Handler) http.Handler {
 			AddField(ctx, "latency", time.Since(now).Nanoseconds())
 			next.ServeHTTP(w, r)
 
-			Info(ctx)
+			LogWithoutContext(InfoLevel).Info(ctx)
 
 			delete(logctx, ctx)
 			delete(logkey, traceID)

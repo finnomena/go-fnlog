@@ -7,7 +7,7 @@ import (
 	"os"
 )
 
-func log(level logLevel, f fields, args ...interface{}) {
+func log(level LogLevel, f fields, args ...interface{}) {
 	_, ctx := args[0].(context.Context)
 	if ctx {
 		if len(args) != 1 {
