@@ -9,38 +9,45 @@ import (
 	"time"
 )
 
+type fields map[string]interface{}
+
 // AddField - add key and value
-func AddField(ctx context.Context, key string, value interface{}) {
+func (s *standard) AddField(ctx context.Context, key string, value interface{}) {
 	if ctx == nil {
 		return
 	}
 
-	if _, ok := logctx[ctx]; ok {
-		logctx[ctx][key] = value
-		traceID := ctx.Value("request_id")
+	if _, ok := s.logctx[ctx]; ok {
+		s.logctx[ctx][key] = value
+		traceID := ctx.Value(requestID)
 		if traceID == nil {
 			return
 		}
-		if _, ok := logkey[traceID]; ok {
-			logkey[traceID][key] = value
+		if _, ok := s.logkey[traceID]; ok {
+			s.logkey[traceID][key] = value
 		}
 	} else {
-		traceID := ctx.Value("request_id")
+		traceID := ctx.Value(requestID)
 		if traceID == nil {
 			return
 		}
-		if _, ok := logkey[traceID]; ok {
-			logkey[traceID][key] = value
+		if _, ok := s.logkey[traceID]; ok {
+			s.logkey[traceID][key] = value
 		}
 	}
 }
 
-func getFields(arg interface{}) fields {
+// AddField - add key and value for global standard
+func AddField(ctx context.Context, key string, value interface{}) {
+	standardLoger.AddField(ctx, key, value)
+}
+
+func (s *standard) getFields(arg interface{}) fields {
 	ctx, ok := arg.(context.Context)
-	if v, has := logctx[ctx]; ok && has {
+	if v, has := s.logctx[ctx]; ok && has {
 		return v
 	}
-	if v, has := logkey[arg]; has {
+	if v, has := s.logkey[arg]; has {
 		return v
 	}
 	return nil
@@ -49,12 +56,24 @@ func getFields(arg interface{}) fields {
 var calldepth = 4
 
 func defaultLog(level LogLevel) string {
-	funcName, fileName, _ := reportCaller(calldepth)
+	needCaller := false
 	s := "{"
-	s += `"level":"` + levelText[level] + `",`
-	s += fmt.Sprintf(`"time":"%v",`, time.Now().Format(time.RFC3339Nano))
-	s += fmt.Sprintf(`"func":"%v",`, funcName)
-	s += fmt.Sprintf(`"file":"%v",`, fileName)
+	if level != accessLevel {
+		s += `"level":"` + levelText[level] + `",`
+		needCaller = true
+	} else {
+		level = InfoLevel
+	}
+	var funcName, fileName string
+	if needCaller {
+		funcName, fileName, _ = reportCaller(calldepth)
+	}
+	s += `"serverity":"` + levelText[level] + `",`
+	s += fmt.Sprintf(`"timestamp":"%v",`, time.Now().Format(time.RFC3339Nano))
+	if needCaller {
+		s += fmt.Sprintf(`"func":"%v",`, funcName)
+		s += fmt.Sprintf(`"file":"%v",`, fileName)
+	}
 	return s
 }
 
