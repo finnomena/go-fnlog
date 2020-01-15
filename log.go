@@ -6,11 +6,6 @@ import (
 	"os"
 )
 
-// LogWithoutContext - get log instance
-func LogWithoutContext(level LogLevel) Logger {
-	return &standard{Level: level}
-}
-
 func (s *standard) Info(args ...interface{}) {
 	if !s.IsInfoEnabled() {
 		return

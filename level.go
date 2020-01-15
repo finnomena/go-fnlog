@@ -56,3 +56,7 @@ func GetLogLevel(level string) (LogLevel, error) {
 		return OffLevel, errors.New("log is not invalid or not set")
 	}
 }
+
+func (s *standard) SetLevel(level LogLevel) {
+	s.Level = level
+}

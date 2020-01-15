@@ -16,7 +16,10 @@ func DeleteKey(ctx context.Context) {
 	standardLoger.DeleteKey(ctx)
 }
 
-func (s *standard) DeleteKey(ctx context.Context) {
-	delete(s.logctx, ctx)
+func (s *standard) DeleteKey(key interface{}) {
+	c, ok := key.(context.Context)
+	if ok {
+		delete(s.logctx, c)
+	}
 	delete(s.logkey, requestID)
 }

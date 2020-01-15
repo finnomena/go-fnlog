@@ -18,6 +18,10 @@ type Logger interface {
 	IsDebugEnabled() bool
 	IsInfoEnabled() bool
 	IsTraceEnabled() bool
+
+	SetLevel(level LogLevel)
+	SetContext(ctx context.Context)
+	DeleteKey(key interface{})
 }
 
 type standard struct {
@@ -32,8 +36,17 @@ const requestID string = "request_id"
 var standardLoger *standard
 
 func init() {
-	standardLoger = &standard{
-		Level:  InfoLevel,
+	standardLoger = new()
+}
+
+// NewLogger - get log instance
+func NewLogger() Logger {
+	return new()
+}
+
+func new() *standard {
+	return &standard{
+		Level:  TraceLevel,
 		logctx: make(map[context.Context]fields),
 		logkey: make(map[interface{}]fields),
 	}
