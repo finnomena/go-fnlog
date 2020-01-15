@@ -9,10 +9,12 @@ import (
 	"time"
 )
 
+// AddField - add key and value
 func AddField(ctx context.Context, key string, value interface{}) {
 	if ctx == nil {
 		return
 	}
+
 	if _, ok := logctx[ctx]; ok {
 		logctx[ctx][key] = value
 		traceID := ctx.Value("request_id")
@@ -46,10 +48,10 @@ func getFields(arg interface{}) fields {
 
 var calldepth = 4
 
-func defaultLog(level logLevel) string {
+func defaultLog(level LogLevel) string {
 	funcName, fileName, _ := reportCaller(calldepth)
 	s := "{"
-	s += `"level":"` + levelTxt[level] + `",`
+	s += `"level":"` + levelText[level] + `",`
 	s += fmt.Sprintf(`"time":"%v",`, time.Now().Format(time.RFC3339Nano))
 	s += fmt.Sprintf(`"func":"%v",`, funcName)
 	s += fmt.Sprintf(`"file":"%v",`, fileName)
