@@ -21,7 +21,7 @@ func log(level LogLevel, f fields, args ...interface{}) {
 		s = logAllField(s, f)
 	}
 	if args != nil {
-		s += fmt.Sprintf(`"msg":"%v",`, args...)
+		s += fmt.Sprintf(`"message":"%v",`, args...)
 	}
 	s = s[:len(s)-1] + "}\n"
 	io.WriteString(os.Stdout, s)

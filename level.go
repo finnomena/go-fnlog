@@ -12,6 +12,7 @@ type LogLevel int32
 const (
 	TraceLevel LogLevel = iota
 	DebugLevel
+	accessLevel
 	InfoLevel
 	WarnLevel
 	ErrorLevel
@@ -21,32 +22,15 @@ const (
 )
 
 var levelText map[LogLevel]string = map[LogLevel]string{
-	TraceLevel: "trace",
-	DebugLevel: "debug",
-	InfoLevel:  "info",
-	WarnLevel:  "warn",
-	ErrorLevel: "error",
-	FatalLevel: "fatal",
-	PanicLevel: "panic",
-	OffLevel:   "off",
-}
-
-// Logger - interface
-type Logger interface {
-	Panic(args ...interface{})
-	Fatal(args ...interface{})
-	Error(args ...interface{})
-	Warn(args ...interface{})
-	Info(args ...interface{})
-	Debug(args ...interface{})
-	Trace(args ...interface{})
-	IsPanicEnabled() bool
-	IsFatalEnabled() bool
-	IsErrorEnabled() bool
-	IsWarnEnabled() bool
-	IsDebugEnabled() bool
-	IsInfoEnabled() bool
-	IsTraceEnabled() bool
+	TraceLevel:  "trace",
+	DebugLevel:  "debug",
+	InfoLevel:   "info",
+	accessLevel: "",
+	WarnLevel:   "warn",
+	ErrorLevel:  "error",
+	FatalLevel:  "fatal",
+	PanicLevel:  "panic",
+	OffLevel:    "off",
 }
 
 // GetLogLevel - return int of log level, default is off
@@ -71,4 +55,8 @@ func GetLogLevel(level string) (LogLevel, error) {
 	default:
 		return OffLevel, errors.New("log is not invalid or not set")
 	}
+}
+
+func (s *standard) SetLevel(level LogLevel) {
+	s.Level = level
 }

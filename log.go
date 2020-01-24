@@ -1,21 +1,10 @@
 package fnlog
 
 import (
-	"context"
 	"fmt"
 	"io"
 	"os"
 )
-
-type standard struct {
-	Level   LogLevel
-	Context context.Context
-}
-
-// LogWithoutContext - get log instance
-func LogWithoutContext(level LogLevel) Logger {
-	return &standard{Level: level}
-}
 
 func (s *standard) Info(args ...interface{}) {
 	if !s.IsInfoEnabled() {
@@ -26,7 +15,7 @@ func (s *standard) Info(args ...interface{}) {
 		io.WriteString(os.Stdout, fmt.Sprint(args...)+"\n")
 	}
 
-	f := getFields(args[0])
+	f := s.getFields(args[0])
 	log(s.Level, f, args...)
 }
 
@@ -43,7 +32,7 @@ func (s *standard) Debug(args ...interface{}) {
 		io.WriteString(os.Stdout, fmt.Sprint(args...)+"\n")
 	}
 
-	f := getFields(args[0])
+	f := s.getFields(args[0])
 	log(s.Level, f, args...)
 }
 
@@ -60,7 +49,7 @@ func (s *standard) Error(args ...interface{}) {
 		io.WriteString(os.Stdout, fmt.Sprint(args...)+"\n")
 	}
 
-	f := getFields(args[0])
+	f := s.getFields(args[0])
 	log(s.Level, f, args...)
 }
 
@@ -77,7 +66,7 @@ func (s *standard) Panic(args ...interface{}) {
 		io.WriteString(os.Stdout, fmt.Sprint(args...)+"\n")
 	}
 
-	f := getFields(args[0])
+	f := s.getFields(args[0])
 	log(s.Level, f, args...)
 	panic(nil)
 }
@@ -95,7 +84,7 @@ func (s *standard) Trace(args ...interface{}) {
 		io.WriteString(os.Stdout, fmt.Sprint(args...)+"\n")
 	}
 
-	f := getFields(args[0])
+	f := s.getFields(args[0])
 	log(s.Level, f, args...)
 }
 
@@ -112,7 +101,7 @@ func (s *standard) Warn(args ...interface{}) {
 		io.WriteString(os.Stdout, fmt.Sprint(args...)+"\n")
 	}
 
-	f := getFields(args[0])
+	f := s.getFields(args[0])
 	log(s.Level, f, args...)
 }
 
@@ -129,11 +118,56 @@ func (s *standard) Fatal(args ...interface{}) {
 		io.WriteString(os.Stdout, fmt.Sprint(args...)+"\n")
 	}
 
-	f := getFields(args[0])
+	f := s.getFields(args[0])
 	log(s.Level, f, args...)
 	os.Exit(1)
 }
 
 func (s *standard) IsFatalEnabled() bool {
 	return s.Level <= FatalLevel
+}
+
+func (s *standard) Access(args ...interface{}) {
+	if !s.IsInfoEnabled() {
+		return
+	}
+
+	if len(args) == 0 {
+		io.WriteString(os.Stdout, fmt.Sprint(args...)+"\n")
+	}
+
+	f := s.getFields(args[0])
+	log(accessLevel, f, args...)
+}
+
+func Info(args ...interface{}) {
+	standardLoger.Info(args...)
+}
+
+func Debug(args ...interface{}) {
+	standardLoger.Debug(args...)
+}
+
+func Error(args ...interface{}) {
+	standardLoger.Error(args...)
+}
+
+func Panic(args ...interface{}) {
+	standardLoger.Panic(args...)
+}
+
+func Trace(args ...interface{}) {
+	standardLoger.Trace(args...)
+}
+
+func Warn(args ...interface{}) {
+	standardLoger.Warn(args...)
+}
+
+func Fatal(args ...interface{}) {
+	standardLoger.Fatal(args...)
+}
+
+func Access(args ...interface{}) {
+	standardLoger.Access(args...)
 }

@@ -14,11 +14,10 @@ func LoggingMiddleware() func(http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			now := time.Now()
 			traceID := fmt.Sprintf("%v%v", now.UnixNano(), rand.Int())
-			ctx := context.WithValue(r.Context(), "request_id", traceID) // nolint
+			ctx := context.WithValue(r.Context(), requestID, traceID) // nolint
 			r = r.WithContext(ctx)
 
-			logctx[ctx] = make(map[string]interface{})
-			logkey[traceID] = make(map[string]interface{})
+			SetContext(r.Context())
 
 			AddField(ctx, "ip", r.RemoteAddr)
 			AddField(ctx, "method", r.Method)
@@ -26,12 +25,14 @@ func LoggingMiddleware() func(http.Handler) http.Handler {
 			AddField(ctx, "request_id", traceID)
 			AddField(ctx, "user_agent", r.UserAgent())
 			AddField(ctx, "latency", time.Since(now).Nanoseconds())
-			next.ServeHTTP(w, r)
 
-			LogWithoutContext(InfoLevel).Info(ctx)
+			fnlogWriter := responseWriter{
+				w: w,
+			}
 
-			delete(logctx, ctx)
-			delete(logkey, traceID)
+			next.ServeHTTP(&fnlogWriter, r)
+			AddField(ctx, "status", fnlogWriter.code)
+			Access(ctx)
 		})
 	}
 }
