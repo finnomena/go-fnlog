@@ -11,12 +11,7 @@ func (s *standard) Info(args ...interface{}) {
 		return
 	}
 
-	if len(args) == 0 {
-		io.WriteString(os.Stdout, fmt.Sprint(args...)+"\n")
-	}
-
-	f := s.getFields(args[0])
-	log(InfoLevel, f, args...)
+	s.print(InfoLevel, args...)
 }
 
 func (s *standard) IsInfoEnabled() bool {
@@ -28,12 +23,7 @@ func (s *standard) Debug(args ...interface{}) {
 		return
 	}
 
-	if len(args) == 0 {
-		io.WriteString(os.Stdout, fmt.Sprint(args...)+"\n")
-	}
-
-	f := s.getFields(args[0])
-	log(DebugLevel, f, args...)
+	s.print(DebugLevel, args...)
 }
 
 func (s *standard) IsDebugEnabled() bool {
@@ -45,12 +35,7 @@ func (s *standard) Error(args ...interface{}) {
 		return
 	}
 
-	if len(args) == 0 {
-		io.WriteString(os.Stdout, fmt.Sprint(args...)+"\n")
-	}
-
-	f := s.getFields(args[0])
-	log(ErrorLevel, f, args...)
+	s.print(ErrorLevel, args...)
 }
 
 func (s *standard) IsErrorEnabled() bool {
@@ -62,12 +47,7 @@ func (s *standard) Panic(args ...interface{}) {
 		return
 	}
 
-	if len(args) == 0 {
-		io.WriteString(os.Stdout, fmt.Sprint(args...)+"\n")
-	}
-
-	f := s.getFields(args[0])
-	log(PanicLevel, f, args...)
+	s.print(PanicLevel, args...)
 
 	panic(nil)
 }
@@ -81,12 +61,7 @@ func (s *standard) Trace(args ...interface{}) {
 		return
 	}
 
-	if len(args) == 0 {
-		io.WriteString(os.Stdout, fmt.Sprint(args...)+"\n")
-	}
-
-	f := s.getFields(args[0])
-	log(TraceLevel, f, args...)
+	s.print(TraceLevel, args...)
 }
 
 func (s *standard) IsTraceEnabled() bool {
@@ -98,12 +73,7 @@ func (s *standard) Warn(args ...interface{}) {
 		return
 	}
 
-	if len(args) == 0 {
-		io.WriteString(os.Stdout, fmt.Sprint(args...)+"\n")
-	}
-
-	f := s.getFields(args[0])
-	log(WarnLevel, f, args...)
+	s.print(WarnLevel, args...)
 }
 
 func (s *standard) IsWarnEnabled() bool {
@@ -115,12 +85,7 @@ func (s *standard) Fatal(args ...interface{}) {
 		return
 	}
 
-	if len(args) == 0 {
-		io.WriteString(os.Stdout, fmt.Sprint(args...)+"\n")
-	}
-
-	f := s.getFields(args[0])
-	log(FatalLevel, f, args...)
+	s.print(FatalLevel, args...)
 
 	os.Exit(1)
 }
@@ -134,12 +99,7 @@ func (s *standard) Access(args ...interface{}) {
 		return
 	}
 
-	if len(args) == 0 {
-		io.WriteString(os.Stdout, fmt.Sprint(args...)+"\n")
-	}
-
-	f := s.getFields(args[0])
-	log(accessLevel, f, args...)
+	s.print(accessLevel, args...)
 }
 
 // Info - global info log
@@ -180,4 +140,12 @@ func Fatal(args ...interface{}) {
 // Access - global access log
 func Access(args ...interface{}) {
 	standardLoger.Access(args...)
+}
+
+func (s *standard) print(level LogLevel, args ...interface{}) {
+	if len(args) == 0 {
+		io.WriteString(s.writer, fmt.Sprint(args...)+"\n")
+	}
+
+	s.log(level, s.getFields(args[0]), args...)
 }
