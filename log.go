@@ -16,7 +16,7 @@ func (s *standard) Info(args ...interface{}) {
 	}
 
 	f := s.getFields(args[0])
-	log(s.Level, f, args...)
+	log(InfoLevel, f, args...)
 }
 
 func (s *standard) IsInfoEnabled() bool {
@@ -33,7 +33,7 @@ func (s *standard) Debug(args ...interface{}) {
 	}
 
 	f := s.getFields(args[0])
-	log(s.Level, f, args...)
+	log(DebugLevel, f, args...)
 }
 
 func (s *standard) IsDebugEnabled() bool {
@@ -50,7 +50,7 @@ func (s *standard) Error(args ...interface{}) {
 	}
 
 	f := s.getFields(args[0])
-	log(s.Level, f, args...)
+	log(ErrorLevel, f, args...)
 }
 
 func (s *standard) IsErrorEnabled() bool {
@@ -67,7 +67,8 @@ func (s *standard) Panic(args ...interface{}) {
 	}
 
 	f := s.getFields(args[0])
-	log(s.Level, f, args...)
+	log(PanicLevel, f, args...)
+
 	panic(nil)
 }
 
@@ -85,7 +86,7 @@ func (s *standard) Trace(args ...interface{}) {
 	}
 
 	f := s.getFields(args[0])
-	log(s.Level, f, args...)
+	log(TraceLevel, f, args...)
 }
 
 func (s *standard) IsTraceEnabled() bool {
@@ -102,7 +103,7 @@ func (s *standard) Warn(args ...interface{}) {
 	}
 
 	f := s.getFields(args[0])
-	log(s.Level, f, args...)
+	log(WarnLevel, f, args...)
 }
 
 func (s *standard) IsWarnEnabled() bool {
@@ -119,7 +120,8 @@ func (s *standard) Fatal(args ...interface{}) {
 	}
 
 	f := s.getFields(args[0])
-	log(s.Level, f, args...)
+	log(FatalLevel, f, args...)
+
 	os.Exit(1)
 }
 
@@ -140,34 +142,42 @@ func (s *standard) Access(args ...interface{}) {
 	log(accessLevel, f, args...)
 }
 
+// Info - global info log
 func Info(args ...interface{}) {
 	standardLoger.Info(args...)
 }
 
+// Debug - global debug log
 func Debug(args ...interface{}) {
 	standardLoger.Debug(args...)
 }
 
+// Error - global error log
 func Error(args ...interface{}) {
 	standardLoger.Error(args...)
 }
 
+// Panic - global panic log
 func Panic(args ...interface{}) {
 	standardLoger.Panic(args...)
 }
 
+// Trace - global trace log
 func Trace(args ...interface{}) {
 	standardLoger.Trace(args...)
 }
 
+// Warn - global warn log
 func Warn(args ...interface{}) {
 	standardLoger.Warn(args...)
 }
 
+// Fatal - global fatal log
 func Fatal(args ...interface{}) {
 	standardLoger.Fatal(args...)
 }
 
+// Access - global access log
 func Access(args ...interface{}) {
 	standardLoger.Access(args...)
 }

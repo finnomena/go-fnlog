@@ -16,13 +16,13 @@ func log(level LogLevel, f fields, args ...interface{}) {
 			args = nil
 		}
 	}
-	s := defaultLog(level)
+	msg := defaultLog(level)
 	if f != nil {
-		s = logAllField(s, f)
+		msg = logAllField(msg, f)
 	}
 	if args != nil {
-		s += fmt.Sprintf(`"message":"%v",`, args...)
+		msg += fmt.Sprintf(`"message":"%v",`, args...)
 	}
-	s = s[:len(s)-1] + "}\n"
-	io.WriteString(os.Stdout, s)
+	msg = msg[:len(msg)-1] + "}\n"
+	io.WriteString(os.Stdout, msg)
 }
