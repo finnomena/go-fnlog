@@ -27,8 +27,34 @@ func main() {
 	logger.SetLevel(fnlog.TraceLevel)
 
 	logger.Debug("logging with struct")
+
+	var obj = &test{
+		logger: logger,
+	}
+
+	obj.logger.Warn("log attribute")
+	obj.print()
+
+	custom := fnlog.NewLoggerWithOptions(fnlog.Options{
+		Writer: os.Stdout,
+		Formatter: &fnlog.JSONFormatter{
+			Timeformat: time.RFC822Z,
+		},
+	})
+
+	custom.Info("custom log")
 }
 
+```
+
+Result will be
+
+```
+{"serverity":"info","timestamp":"2020-02-12T01:40:40.058983+07:00","caller":"github.com/finnomena/go-fnlog.(*standard).print","message":"global"}
+{"serverity":"debug","timestamp":"2020-02-12T01:40:40.059154+07:00","caller":"github.com/finnomena/go-fnlog.(*standard).print","message":"logging with struct"}
+{"serverity":"warn","timestamp":"2020-02-12T01:40:40.05916+07:00","caller":"github.com/finnomena/go-fnlog.(*standard).print","message":"log attribute"}
+{"serverity":"error","timestamp":"2020-02-12T01:40:40.059164+07:00","caller":"github.com/finnomena/go-fnlog.(*standard).print","message":"log with method"}
+{"serverity":"info","timestamp":"12 Feb 20 01:40 +0700","caller":"github.com/finnomena/go-fnlog.(*standard).print","message":"custom log"}
 ```
 
 ## Contributing
