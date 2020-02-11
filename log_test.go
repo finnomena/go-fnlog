@@ -2,7 +2,9 @@ package fnlog_test
 
 import (
 	"fmt"
+	"os"
 	"testing"
+	"time"
 
 	"github.com/finnomena/go-fnlog"
 )
@@ -38,6 +40,15 @@ func TestLog(t *testing.T) {
 
 	obj.logger.Warn("log attribute")
 	obj.print()
+
+	custom := fnlog.NewLoggerWithOptions(fnlog.Options{
+		Writer: os.Stdout,
+		Formatter: &fnlog.JSONFormatter{
+			Timeformat: time.RFC822Z,
+		},
+	})
+
+	custom.Info("custom log")
 }
 
 func TestIsEnableShouldBeCorrect(t *testing.T) {

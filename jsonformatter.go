@@ -9,7 +9,7 @@ import (
 
 // JSONFormatter - log with json format
 type JSONFormatter struct {
-	timeformat string
+	Timeformat string
 }
 
 // Message - json message
@@ -47,7 +47,7 @@ func (p *JSONFormatter) defaultLog(level LogLevel) string {
 	}
 
 	msg += `"serverity":"` + levelText[level] + `",`
-	msg += fmt.Sprintf(`"timestamp":"%v",`, time.Now().Format(p.timeformat))
+	msg += fmt.Sprintf(`"timestamp":"%v",`, time.Now().Format(p.Timeformat))
 
 	if needCaller {
 		if needCaller {

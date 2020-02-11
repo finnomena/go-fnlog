@@ -16,5 +16,5 @@ func (s *standard) log(level LogLevel, f fields, args ...interface{}) {
 		}
 	}
 
-	io.WriteString(os.Stdout, s.formatter.Message(level, f, args))
+	io.WriteString(os.Stdout, s.formatter.Message(level, f, args...))
 }

@@ -66,7 +66,7 @@ func new() *standard {
 		logctx: make(map[context.Context]fields),
 		logkey: make(map[interface{}]fields),
 		formatter: &JSONFormatter{
-			timeformat: time.RFC3339Nano,
+			Timeformat: time.RFC3339Nano,
 		},
 		writer: os.Stdout,
 	}
