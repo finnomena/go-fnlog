@@ -49,12 +49,36 @@ func main() {
 
 Result will be
 
-```
+```json
 {"serverity":"info","timestamp":"2020-02-12T01:40:40.058983+07:00","caller":"github.com/finnomena/go-fnlog.(*standard).print","message":"global"}
 {"serverity":"debug","timestamp":"2020-02-12T01:40:40.059154+07:00","caller":"github.com/finnomena/go-fnlog.(*standard).print","message":"logging with struct"}
 {"serverity":"warn","timestamp":"2020-02-12T01:40:40.05916+07:00","caller":"github.com/finnomena/go-fnlog.(*standard).print","message":"log attribute"}
 {"serverity":"error","timestamp":"2020-02-12T01:40:40.059164+07:00","caller":"github.com/finnomena/go-fnlog.(*standard).print","message":"log with method"}
 {"serverity":"info","timestamp":"12 Feb 20 01:40 +0700","caller":"github.com/finnomena/go-fnlog.(*standard).print","message":"custom log"}
+```
+
+### Using with [Echo](https://echo.labstack.com/)
+
+```go
+import (
+    "net/http"
+
+    "github.com/labstack/echo/v4"
+
+    "github.com/finnomena/go-fnlog"
+)
+
+func main() {
+    e := echo.New()
+
+    e.Use(echo.WrapMiddleware(fnlog.LoggingMiddleware()))
+    e.GET("/", func(c echo.Context) error {
+        fnlog.LogWithoutContext(fnlog.ErrorLevel).Info("test")
+        return c.String(http.StatusOK, "Hello, World!")
+    })
+
+    e.Logger.Fatal(e.Start(":1323"))
+}
 ```
 
 ## Contributing
