@@ -50,9 +50,7 @@ func (p *JSONFormatter) defaultLog(level LogLevel) string {
 	msg += fmt.Sprintf(`"timestamp":"%v",`, time.Now().Format(p.Timeformat))
 
 	if needCaller {
-		if needCaller {
-			msg += fmt.Sprintf(`"caller":"%v",`, GetCaller())
-		}
+		msg += fmt.Sprintf(`"caller":"%v",`, GetCaller())
 	}
 
 	return msg
