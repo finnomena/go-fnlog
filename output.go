@@ -3,7 +3,6 @@ package fnlog
 import (
 	"context"
 	"io"
-	"os"
 )
 
 func (s *standard) log(level LogLevel, f fields, args ...interface{}) {
@@ -16,5 +15,5 @@ func (s *standard) log(level LogLevel, f fields, args ...interface{}) {
 		}
 	}
 
-	io.WriteString(os.Stdout, s.formatter.Message(level, f, args...))
+	io.WriteString(s.writer, s.formatter.Message(level, f, args...))
 }
