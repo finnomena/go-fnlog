@@ -1,7 +1,6 @@
 package fnlog
 
 import (
-	"context"
 	"fmt"
 	"strings"
 	"time"
@@ -14,15 +13,6 @@ type TextFormatter struct {
 
 // Message - json message
 func (p *TextFormatter) Message(level LogLevel, fieldMap fields, args ...interface{}) string {
-	_, ctx := args[0].(context.Context)
-	if ctx {
-		if len(args) != 1 {
-			args = args[1:]
-		} else {
-			args = nil
-		}
-	}
-
 	msg := time.Now().Format(p.Timeformat)
 	msg += logLevelWithColor(level)
 	fun, _, _ := ReportCaller(5)

@@ -1,7 +1,6 @@
 package fnlog
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"time"
@@ -14,15 +13,6 @@ type JSONFormatter struct {
 
 // Message - json message
 func (p *JSONFormatter) Message(level LogLevel, fieldMap fields, args ...interface{}) string {
-	_, ctx := args[0].(context.Context)
-	if ctx {
-		if len(args) != 1 {
-			args = args[1:]
-		} else {
-			args = nil
-		}
-	}
-
 	msg := p.defaultLog(level)
 	if fieldMap != nil {
 		msg = p.logWithField(msg, fieldMap)
