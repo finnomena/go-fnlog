@@ -61,10 +61,7 @@ Result will be
 
 ```go
 import (
-    "net/http"
-
     "github.com/labstack/echo/v4"
-
     "github.com/finnomena/go-fnlog"
 )
 
@@ -80,6 +77,31 @@ func main() {
     e.Logger.Fatal(e.Start(":1323"))
 }
 ```
+
+Use text formatter for reading easier
+
+```go
+import (
+	"os"
+	"github.com/finnomena/go-fnlog"
+)
+
+func main() {
+	var logger fnlog.Logger
+
+    if os.Getenv("environment") == "develop" {
+		logger = fnlog.NewLoggerWithOptions(fnlog.Options{
+			Writer: os.Stdout,
+			Formatter: &fnlog.TextFormatter{
+				Timeformat: "15:04:05",
+			},
+		})
+	} else {
+		logger = fnlog.NewLogger()
+	}
+}
+```
+
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.

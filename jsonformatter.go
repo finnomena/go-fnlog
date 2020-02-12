@@ -29,7 +29,7 @@ func (p *JSONFormatter) Message(level LogLevel, fieldMap fields, args ...interfa
 	}
 
 	if args != nil {
-		msg += fmt.Sprintf(`"message":"%v",`, args...)
+		msg += fmt.Sprintf(`"message":"%+v",`, args...)
 	}
 
 	msg = msg[:len(msg)-1] + "}\n"

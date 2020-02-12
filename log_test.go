@@ -1,6 +1,7 @@
 package fnlog_test
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"testing"
@@ -22,6 +23,11 @@ type test struct {
 	logger fnlog.Logger
 }
 
+type object struct {
+	key   string
+	value int
+}
+
 func (t *test) print() {
 	t.logger.Error("log with method")
 }
@@ -38,7 +44,7 @@ func TestLog(t *testing.T) {
 		logger: logger,
 	}
 
-	obj.logger.Warn("log attribute")
+	obj.logger.Warn(object{key: "name", value: 100})
 	obj.print()
 
 	custom := fnlog.NewLoggerWithOptions(fnlog.Options{
@@ -49,6 +55,19 @@ func TestLog(t *testing.T) {
 	})
 
 	custom.Info("custom log")
+
+	text := fnlog.NewLoggerWithOptions(fnlog.Options{
+		Writer: os.Stdout,
+		Formatter: &fnlog.TextFormatter{
+			Timeformat: "15:04:05",
+		},
+	})
+
+	text.Info("info")
+	text.Debug("debug")
+	text.Warn("warn")
+	text.Trace(object{key: "name", value: 100})
+	text.Error(errors.New("oh my god"))
 }
 
 func TestIsEnableShouldBeCorrect(t *testing.T) {
