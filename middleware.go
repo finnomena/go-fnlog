@@ -34,7 +34,7 @@ func LoggingMiddleware() func(http.Handler) http.Handler {
 			AddField(ctx, "status", fnlogWriter.code)
 			Access(ctx)
 
-			DeleteKey(ctx)
+			defer DeleteKey(ctx)
 		})
 	}
 }
