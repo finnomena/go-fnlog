@@ -1,7 +1,6 @@
 package fnlog
 
 import (
-	"context"
 	"fmt"
 	"runtime"
 	"strings"
@@ -35,17 +34,4 @@ func GetCaller() string {
 	}
 
 	return ""
-}
-
-func manupulateArguments(args ...interface{}) []interface{} {
-	_, ctx := args[0].(context.Context)
-	if ctx {
-		if len(args) != 1 {
-			args = args[1:]
-		} else {
-			args = nil
-		}
-	}
-
-	return args
 }
