@@ -63,11 +63,17 @@ func TestLog(t *testing.T) {
 		},
 	})
 
+	fnlog.SetFormatter(&fnlog.TextFormatter{
+		Timeformat: "15:04:05",
+	})
+
 	text.Info("info")
 	text.Debug("debug")
 	text.Warn("warn")
 	text.Trace(object{key: "name", value: 100})
 	text.Error(errors.New("oh my god"))
+
+	fnlog.Info("global again")
 }
 
 func TestIsEnableShouldBeCorrect(t *testing.T) {

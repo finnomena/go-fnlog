@@ -13,10 +13,10 @@ type TextFormatter struct {
 
 // Message - json message
 func (p *TextFormatter) Message(level LogLevel, fieldMap fields, args ...interface{}) string {
-	msg := time.Now().Format(p.Timeformat)
+	msg := "\033[0;90m" + time.Now().Format(p.Timeformat) + "\033[0m"
 	msg += logLevelWithColor(level)
 	fun, _, _ := ReportCaller(5)
-	msg += fun + " -"
+	msg += "\033[0;96m" + fun + "\033[0m \033[0;90m-\033[0m"
 
 	if fieldMap != nil {
 		for k, v := range fieldMap {
