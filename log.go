@@ -149,3 +149,12 @@ func (s *standard) print(level LogLevel, args ...interface{}) {
 
 	s.log(level, s.getFields(args[0]), args...)
 }
+
+func (s *standard) SetFormatter(formatter Formatter) {
+	s.formatter = formatter
+}
+
+// SetFormatter - set global formatter
+func SetFormatter(formatter Formatter) {
+	standardLoger.SetFormatter(formatter)
+}

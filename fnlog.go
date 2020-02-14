@@ -25,6 +25,7 @@ type Logger interface {
 	IsTraceEnabled() bool
 
 	SetLevel(level LogLevel)
+	SetFormatter(Formatter)
 	SetContext(ctx context.Context)
 	DeleteKey(key interface{})
 }

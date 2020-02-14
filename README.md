@@ -70,7 +70,7 @@ func main() {
 
     e.Use(echo.WrapMiddleware(fnlog.LoggingMiddleware()))
     e.GET("/", func(c echo.Context) error {
-        fnlog.LogWithoutContext(fnlog.ErrorLevel).Info("test")
+        fnlo.Info("test")
         return c.String(http.StatusOK, "Hello, World!")
     })
 
