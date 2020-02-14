@@ -33,6 +33,8 @@ func LoggingMiddleware() func(http.Handler) http.Handler {
 			next.ServeHTTP(&fnlogWriter, r)
 			AddField(ctx, "status", fnlogWriter.code)
 			Access(ctx)
+
+			defer DeleteKey(ctx)
 		})
 	}
 }

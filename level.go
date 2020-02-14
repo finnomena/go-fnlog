@@ -25,7 +25,7 @@ var levelText map[LogLevel]string = map[LogLevel]string{
 	TraceLevel:  "trace",
 	DebugLevel:  "debug",
 	InfoLevel:   "info",
-	accessLevel: "",
+	accessLevel: "default",
 	WarnLevel:   "warn",
 	ErrorLevel:  "error",
 	FatalLevel:  "fatal",

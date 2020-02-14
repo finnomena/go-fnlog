@@ -2,12 +2,10 @@ package fnlog
 
 import (
 	"context"
-	"fmt"
 	"io"
-	"os"
 )
 
-func log(level LogLevel, f fields, args ...interface{}) {
+func (s *standard) log(level LogLevel, f fields, args ...interface{}) {
 	_, ctx := args[0].(context.Context)
 	if ctx {
 		if len(args) != 1 {
@@ -16,13 +14,6 @@ func log(level LogLevel, f fields, args ...interface{}) {
 			args = nil
 		}
 	}
-	s := defaultLog(level)
-	if f != nil {
-		s = logAllField(s, f)
-	}
-	if args != nil {
-		s += fmt.Sprintf(`"message":"%v",`, args...)
-	}
-	s = s[:len(s)-1] + "}\n"
-	io.WriteString(os.Stdout, s)
+
+	io.WriteString(s.writer, s.formatter.Message(level, f, args...))
 }

@@ -1,6 +1,11 @@
 package fnlog
 
-import "context"
+import (
+	"context"
+	"io"
+	"os"
+	"time"
+)
 
 // Logger - interface
 type Logger interface {
@@ -24,14 +29,25 @@ type Logger interface {
 	DeleteKey(key interface{})
 }
 
-type standard struct {
-	Level   LogLevel
-	Context context.Context
-	logctx  map[context.Context]fields
-	logkey  map[interface{}]fields
+// Formatter - log formatter
+type Formatter interface {
+	Message(level LogLevel, fieldMap fields, args ...interface{}) string
 }
 
-const requestID string = "request_id"
+type standard struct {
+	Level     LogLevel
+	Context   context.Context
+	logctx    map[context.Context]fields
+	logkey    map[interface{}]fields
+	formatter Formatter
+	writer    io.Writer
+}
+
+// Options - logger options
+type Options struct {
+	Formatter Formatter
+	Writer    io.Writer
+}
 
 var standardLoger *standard
 
@@ -49,5 +65,20 @@ func new() *standard {
 		Level:  TraceLevel,
 		logctx: make(map[context.Context]fields),
 		logkey: make(map[interface{}]fields),
+		formatter: &JSONFormatter{
+			Timeformat: time.RFC3339Nano,
+		},
+		writer: os.Stdout,
+	}
+}
+
+// NewLoggerWithOptions - create custom logger
+func NewLoggerWithOptions(opts Options) Logger {
+	return &standard{
+		Level:     TraceLevel,
+		logctx:    make(map[context.Context]fields),
+		logkey:    make(map[interface{}]fields),
+		formatter: opts.Formatter,
+		writer:    opts.Writer,
 	}
 }
