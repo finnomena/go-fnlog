@@ -33,7 +33,7 @@ func (t *test) print() {
 }
 
 func TestLog(t *testing.T) {
-	fnlog.Info("global")
+	fnlog.Info("global", "global", "global", "global", "global", "global", "global", "global")
 
 	logger := fnlog.NewLogger()
 	logger.SetLevel(fnlog.TraceLevel)
@@ -45,35 +45,41 @@ func TestLog(t *testing.T) {
 	}
 
 	obj.logger.Warn(object{key: "name", value: 100})
+	obj.logger.Warn(object{key: "name", value: 100}, object{key: "name2", value: 200})
 	obj.print()
 
 	custom := fnlog.NewLoggerWithOptions(fnlog.Options{
 		Writer: os.Stdout,
 		Formatter: &fnlog.JSONFormatter{
 			Timeformat: time.RFC822Z,
+			Delimiter:  " | ",
 		},
 	})
 
 	custom.Info("custom log")
+	custom.Info("custom log", "custom log", "custom log")
 
 	text := fnlog.NewLoggerWithOptions(fnlog.Options{
 		Writer: os.Stdout,
 		Formatter: &fnlog.TextFormatter{
 			Timeformat: "15:04:05",
+			Delimiter:  " | ",
 		},
 	})
 
 	fnlog.SetFormatter(&fnlog.TextFormatter{
 		Timeformat: "15:04:05",
+		Delimiter:  " | ",
 	})
 
-	text.Info("info")
+	text.Info("info", "Info", "Info")
 	text.Debug("debug")
 	text.Warn("warn")
 	text.Trace(object{key: "name", value: 100})
+	text.Trace(object{key: "name", value: 100}, object{key: "name2", value: 200})
 	text.Error(errors.New("oh my god"))
 
-	fnlog.Info("global again")
+	fnlog.Info("global again", "global again", "global again")
 }
 
 func TestIsEnableShouldBeCorrect(t *testing.T) {

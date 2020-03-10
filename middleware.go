@@ -3,17 +3,38 @@ package fnlog
 import (
 	"context"
 	"fmt"
-	"math/rand"
 	"net/http"
 	"time"
+
+	crand "crypto/rand"
+	"encoding/hex"
+	"math/rand"
 )
+
+func randomHex(n int) (string, error) {
+	bytes := make([]byte, n)
+	if _, err := crand.Read(bytes); err != nil {
+		return "", err
+	}
+	return hex.EncodeToString(bytes), nil
+}
 
 // LoggingMiddleware - logging middleware
 func LoggingMiddleware() func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			now := time.Now()
-			traceID := fmt.Sprintf("%v%v", now.UnixNano(), rand.Int())
+			traceID, ok := r.Context().Value(requestID).(string)
+			if (!ok && r.Context().Value(requestID) == nil) || traceID == "" {
+				traceID = r.Header.Get("X-Request-ID")
+				if traceID == "" {
+					val, err := randomHex(16)
+					traceID = val
+					if err != nil {
+						traceID = fmt.Sprintf("%v%v", now.UnixNano(), rand.Int())
+					}
+				}
+			}
 			ctx := context.WithValue(r.Context(), requestID, traceID) // nolint
 			r = r.WithContext(ctx)
 
