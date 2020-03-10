@@ -3,12 +3,14 @@ package fnlog
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 	"time"
 )
 
 // JSONFormatter - log with json format
 type JSONFormatter struct {
 	Timeformat string
+	Delimiter  string
 }
 
 // Message - json message
@@ -19,7 +21,13 @@ func (p *JSONFormatter) Message(level LogLevel, fieldMap fields, args ...interfa
 	}
 
 	if args != nil {
-		s += fmt.Sprintf(`"message":"%+v",`, args...)
+		delimiter := p.Delimiter
+		if delimiter == "" {
+			delimiter = " "
+		}
+		prefix := "%+v" + delimiter
+		prefix = strings.Repeat(prefix, len(args))
+		s += fmt.Sprintf(fmt.Sprintf(`"message":"%s",`, prefix[:len(prefix)-len(delimiter)]), args...)
 	}
 
 	s = s[:len(s)-1] + "}\n"
