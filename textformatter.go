@@ -9,6 +9,7 @@ import (
 // TextFormatter - log with json format
 type TextFormatter struct {
 	Timeformat string
+	Delimiter  string
 }
 
 // Message - json message
@@ -27,7 +28,13 @@ func (p *TextFormatter) Message(level LogLevel, fieldMap fields, args ...interfa
 	}
 
 	if args != nil {
-		msg += fmt.Sprintf(` %+v`, args...)
+		delimiter := p.Delimiter
+		if delimiter == "" {
+			delimiter = " "
+		}
+		prefix := "%+v" + delimiter
+		prefix = strings.Repeat(prefix, len(args))
+		msg += fmt.Sprintf(fmt.Sprintf(` %s`, prefix[:len(prefix)-len(delimiter)]), args...)
 	}
 
 	msg += "\n"
