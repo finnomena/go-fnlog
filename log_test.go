@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"sync"
 	"testing"
 	"time"
 
@@ -80,6 +81,28 @@ func TestLog(t *testing.T) {
 	text.Error(errors.New("oh my god"))
 
 	fnlog.Info("global again", "global again", "global again")
+
+	b := []object{object{}, object{}}
+	fnlog.Debug(b)
+
+	mapObject := make(map[string]interface{})
+	fnlog.Debug(mapObject)
+
+	sliceMapObject := []map[string]interface{}{mapObject, mapObject}
+	fnlog.Debug(sliceMapObject)
+
+	var inter interface{}
+	fnlog.Debug(inter)
+
+	var wg sync.WaitGroup
+	for i := 1; i <= 10; i++ {
+		wg.Add(1)
+		go func(i int) {
+			fnlog.Info("log concurency", "round", i)
+			wg.Done()
+		}(i)
+	}
+	wg.Wait()
 }
 
 func TestIsEnableShouldBeCorrect(t *testing.T) {
