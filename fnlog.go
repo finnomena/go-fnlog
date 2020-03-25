@@ -43,7 +43,7 @@ type standard struct {
 	logkey    map[interface{}]fields
 	formatter Formatter
 	writer    io.Writer
-	mu        sync.Mutex
+	mu        sync.RWMutex
 }
 
 // Options - logger options
