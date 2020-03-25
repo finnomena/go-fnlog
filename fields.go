@@ -2,6 +2,7 @@ package fnlog
 
 import (
 	"context"
+	"reflect"
 )
 
 type fields map[string]interface{}
@@ -46,6 +47,14 @@ func (s *standard) getFields(arg interface{}) fields {
 	defer s.mu.Unlock()
 	if v, has := s.logctx[ctx]; ok && has {
 		return v
+	}
+
+	if arg == nil {
+		return nil
+	}
+	switch reflect.TypeOf(arg).Kind() {
+	case reflect.Slice, reflect.Array, reflect.Map:
+		return nil
 	}
 	if v, has := s.logkey[arg]; has {
 		return v
