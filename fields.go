@@ -42,8 +42,8 @@ func AddField(ctx context.Context, key string, value interface{}) {
 
 func (s *standard) getFields(arg interface{}) fields {
 	ctx, ok := arg.(context.Context)
-	s.mu.Lock()
-	defer s.mu.Unlock()
+	s.mu.RLock()
+	defer s.mu.RUnlock()
 	if v, has := s.logctx[ctx]; ok && has {
 		return v
 	}
