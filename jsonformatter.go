@@ -11,6 +11,7 @@ import (
 type JSONFormatter struct {
 	Timeformat string
 	Delimiter  string
+	CallDepth  *int
 }
 
 // Message - json message
@@ -47,7 +48,7 @@ func (p *JSONFormatter) defaultLog(level LogLevel) string {
 	s += fmt.Sprintf(`"timestamp":"%v",`, time.Now().Format(p.Timeformat))
 
 	if needCaller {
-		s += fmt.Sprintf(`"caller":"%v",`, GetCaller())
+		s += fmt.Sprintf(`"caller":"%v",`, GetCaller(p.CallDepth))
 	}
 
 	return s

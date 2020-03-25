@@ -49,28 +49,32 @@ func TestLog(t *testing.T) {
 	obj.logger.Warn(object{key: "name", value: 100}, object{key: "name2", value: 200})
 	obj.print()
 
+	depth := 6
 	custom := fnlog.NewLoggerWithOptions(fnlog.Options{
 		Writer: os.Stdout,
 		Formatter: &fnlog.JSONFormatter{
 			Timeformat: time.RFC822Z,
 			Delimiter:  " | ",
+			CallDepth:  &depth,
 		},
 	})
 
 	custom.Info("custom log")
 	custom.Info("custom log", "custom log", "custom log")
 
+	depth = 5
 	text := fnlog.NewLoggerWithOptions(fnlog.Options{
 		Writer: os.Stdout,
 		Formatter: &fnlog.TextFormatter{
 			Timeformat: "15:04:05",
 			Delimiter:  " | ",
+			CallDepth:  &depth,
 		},
 	})
-
 	fnlog.SetFormatter(&fnlog.TextFormatter{
 		Timeformat: "15:04:05",
 		Delimiter:  " | ",
+		CallDepth:  &depth,
 	})
 
 	text.Info("info", "Info", "Info")
@@ -189,12 +193,13 @@ func TestIsEnableShouldBeCorrect(t *testing.T) {
 
 func BenchmarkCaller(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		fnlog.GetCaller()
+		fnlog.GetCaller(nil)
 	}
 }
 
 func BenchmarkReportCaller(b *testing.B) {
+	depth := 4
 	for i := 0; i < b.N; i++ {
-		fnlog.ReportCaller(4)
+		fnlog.ReportCaller(&depth)
 	}
 }
