@@ -4,6 +4,7 @@ import (
 	"context"
 	"io"
 	"os"
+	"sync"
 	"time"
 )
 
@@ -42,6 +43,8 @@ type standard struct {
 	logkey    map[interface{}]fields
 	formatter Formatter
 	writer    io.Writer
+	mu        sync.RWMutex
+	calldepth int
 }
 
 // Options - logger options
@@ -54,15 +57,17 @@ type Options struct {
 var standardLoger *standard
 
 func init() {
-	standardLoger = new()
+	standardLoger = new(nil)
 }
 
 // NewLogger - get log instance
 func NewLogger() Logger {
-	return new()
+	depth := 6
+	return new(&depth)
 }
 
-func new() *standard {
+func new(depth *int) *standard {
+
 	return &standard{
 		Level:  TraceLevel,
 		logctx: make(map[context.Context]fields),
@@ -70,6 +75,7 @@ func new() *standard {
 		formatter: &JSONFormatter{
 			Timeformat: time.RFC3339Nano,
 			Delimiter:  " ",
+			CallDepth:  depth,
 		},
 		writer: os.Stdout,
 	}

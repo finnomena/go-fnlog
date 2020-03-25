@@ -2,6 +2,7 @@ package fnlog
 
 import (
 	"context"
+	"reflect"
 )
 
 type fields map[string]interface{}
@@ -13,7 +14,8 @@ func (s *standard) AddField(ctx context.Context, key string, value interface{}) 
 	if ctx == nil {
 		return
 	}
-
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	if _, ok := s.logctx[ctx]; ok {
 		s.logctx[ctx][key] = value
 		traceID := ctx.Value(requestID)
@@ -41,8 +43,18 @@ func AddField(ctx context.Context, key string, value interface{}) {
 
 func (s *standard) getFields(arg interface{}) fields {
 	ctx, ok := arg.(context.Context)
+	s.mu.RLock()
+	defer s.mu.RUnlock()
 	if v, has := s.logctx[ctx]; ok && has {
 		return v
+	}
+
+	if arg == nil {
+		return nil
+	}
+	switch reflect.TypeOf(arg).Kind() {
+	case reflect.Slice, reflect.Array, reflect.Map:
+		return nil
 	}
 	if v, has := s.logkey[arg]; has {
 		return v
