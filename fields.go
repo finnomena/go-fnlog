@@ -13,7 +13,8 @@ func (s *standard) AddField(ctx context.Context, key string, value interface{}) 
 	if ctx == nil {
 		return
 	}
-
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	if _, ok := s.logctx[ctx]; ok {
 		s.logctx[ctx][key] = value
 		traceID := ctx.Value(requestID)
@@ -41,6 +42,8 @@ func AddField(ctx context.Context, key string, value interface{}) {
 
 func (s *standard) getFields(arg interface{}) fields {
 	ctx, ok := arg.(context.Context)
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	if v, has := s.logctx[ctx]; ok && has {
 		return v
 	}

@@ -4,6 +4,7 @@ import (
 	"context"
 	"io"
 	"os"
+	"sync"
 	"time"
 )
 
@@ -42,6 +43,7 @@ type standard struct {
 	logkey    map[interface{}]fields
 	formatter Formatter
 	writer    io.Writer
+	mu        sync.Mutex
 }
 
 // Options - logger options
