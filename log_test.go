@@ -4,6 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"runtime"
+	"sync"
 	"testing"
 	"time"
 
@@ -33,11 +35,10 @@ func (t *test) print() {
 }
 
 func TestLog(t *testing.T) {
-	fnlog.Info("global")
+	fnlog.Info("global", "global", "global", "global", "global", "global", "global", "global")
 
 	logger := fnlog.NewLogger()
 	logger.SetLevel(fnlog.TraceLevel)
-
 	logger.Debug("logging with struct")
 
 	var obj = &test{
@@ -45,29 +46,67 @@ func TestLog(t *testing.T) {
 	}
 
 	obj.logger.Warn(object{key: "name", value: 100})
+	obj.logger.Warn(object{key: "name", value: 100}, object{key: "name2", value: 200})
 	obj.print()
 
+	depth := 6
 	custom := fnlog.NewLoggerWithOptions(fnlog.Options{
 		Writer: os.Stdout,
 		Formatter: &fnlog.JSONFormatter{
 			Timeformat: time.RFC822Z,
+			Delimiter:  " | ",
+			CallDepth:  &depth,
 		},
 	})
 
 	custom.Info("custom log")
+	custom.Info("custom log", "custom log", "custom log")
 
+	depth = 5
 	text := fnlog.NewLoggerWithOptions(fnlog.Options{
 		Writer: os.Stdout,
 		Formatter: &fnlog.TextFormatter{
 			Timeformat: "15:04:05",
+			Delimiter:  " | ",
+			CallDepth:  &depth,
 		},
 	})
+	fnlog.SetFormatter(&fnlog.TextFormatter{
+		Timeformat: "15:04:05",
+		Delimiter:  " | ",
+		CallDepth:  &depth,
+	})
 
-	text.Info("info")
+	text.Info("info", "Info", "Info")
 	text.Debug("debug")
 	text.Warn("warn")
 	text.Trace(object{key: "name", value: 100})
+	text.Trace(object{key: "name", value: 100}, object{key: "name2", value: 200})
 	text.Error(errors.New("oh my god"))
+
+	fnlog.Info("global again", "global again", "global again")
+
+	b := []object{object{}, object{}}
+	fnlog.Debug(b)
+
+	mapObject := make(map[string]interface{})
+	fnlog.Debug(mapObject)
+
+	sliceMapObject := []map[string]interface{}{mapObject, mapObject}
+	fnlog.Debug(sliceMapObject)
+
+	var inter interface{}
+	fnlog.Debug(inter)
+
+	var wg sync.WaitGroup
+	for i := 1; i <= 10; i++ {
+		wg.Add(1)
+		go func(i int) {
+			fnlog.Info("log concurency", "round", i)
+			wg.Done()
+		}(i)
+	}
+	wg.Wait()
 }
 
 func TestIsEnableShouldBeCorrect(t *testing.T) {
@@ -153,13 +192,48 @@ func TestIsEnableShouldBeCorrect(t *testing.T) {
 }
 
 func BenchmarkCaller(b *testing.B) {
+	depth := 4
 	for i := 0; i < b.N; i++ {
-		fnlog.GetCaller()
+		fnlog.GetCaller(&depth)
 	}
 }
 
 func BenchmarkReportCaller(b *testing.B) {
+	depth := 4
 	for i := 0; i < b.N; i++ {
-		fnlog.ReportCaller(4)
+		fnlog.ReportCaller(&depth)
 	}
+}
+
+func BenchmarkDynamicCaller(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		getCaller()
+	}
+}
+
+func getCaller() string {
+	return getFrame(2).Function
+}
+
+func getFrame(skipFrames int) runtime.Frame {
+	// We need the frame at index skipFrames+2, since we never want runtime.Callers and getFrame
+	targetFrameIndex := skipFrames + 2
+
+	// Set size to targetFrameIndex+2 to ensure we have room for one more caller than we need
+	programCounters := make([]uintptr, targetFrameIndex+2)
+	n := runtime.Callers(0, programCounters)
+
+	frame := runtime.Frame{Function: "unknown"}
+	if n > 0 {
+		frames := runtime.CallersFrames(programCounters[:n])
+		for more, frameIndex := true, 0; more && frameIndex <= targetFrameIndex; frameIndex++ {
+			var frameCandidate runtime.Frame
+			frameCandidate, more = frames.Next()
+			if frameIndex == targetFrameIndex {
+				frame = frameCandidate
+			}
+		}
+	}
+
+	return frame
 }

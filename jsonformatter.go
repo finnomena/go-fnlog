@@ -3,47 +3,55 @@ package fnlog
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 	"time"
 )
 
 // JSONFormatter - log with json format
 type JSONFormatter struct {
 	Timeformat string
+	Delimiter  string
+	CallDepth  *int
 }
 
 // Message - json message
 func (p *JSONFormatter) Message(level LogLevel, fieldMap fields, args ...interface{}) string {
-	msg := p.defaultLog(level)
+	s := p.defaultLog(level)
 	if fieldMap != nil {
-		msg = p.logWithField(msg, fieldMap)
+		s = p.logWithField(s, fieldMap)
 	}
 
 	if args != nil {
-		msg += fmt.Sprintf(`"message":"%+v",`, args...)
+		delimiter := p.Delimiter
+		if delimiter == "" {
+			delimiter = " "
+		}
+		prefix := "%+v" + delimiter
+		prefix = strings.Repeat(prefix, len(args))
+		s += fmt.Sprintf(fmt.Sprintf(`"message":"%s",`, prefix[:len(prefix)-len(delimiter)]), args...)
 	}
 
-	msg = msg[:len(msg)-1] + "}\n"
+	s = s[:len(s)-1] + "}\n"
 
-	return msg
-
+	return s
 }
 
 func (p *JSONFormatter) defaultLog(level LogLevel) string {
 	needCaller := false
-	msg := "{"
+	s := "{"
 
 	if level != accessLevel {
 		needCaller = true
 	}
 
-	msg += `"serverity":"` + levelText[level] + `",`
-	msg += fmt.Sprintf(`"timestamp":"%v",`, time.Now().Format(p.Timeformat))
+	s += `"severity":"` + levelText[level] + `",`
+	s += fmt.Sprintf(`"timestamp":"%v",`, time.Now().Format(p.Timeformat))
 
 	if needCaller {
-		msg += fmt.Sprintf(`"caller":"%v",`, GetCaller())
+		s += fmt.Sprintf(`"caller":"%v",`, GetCaller(p.CallDepth))
 	}
 
-	return msg
+	return s
 }
 
 func (p *JSONFormatter) logWithField(s string, f fields) string {
@@ -67,5 +75,6 @@ func (p *JSONFormatter) logWithField(s string, f fields) string {
 			s += fmt.Sprintf(`"%v":%v,`, k, string(mar))
 		}
 	}
+
 	return s
 }

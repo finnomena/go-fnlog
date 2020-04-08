@@ -29,7 +29,7 @@ var levelText map[LogLevel]string = map[LogLevel]string{
 	WarnLevel:   "warn",
 	ErrorLevel:  "error",
 	FatalLevel:  "fatal",
-	PanicLevel:  "panic",
+	PanicLevel:  "critical",
 	OffLevel:    "off",
 }
 
