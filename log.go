@@ -49,7 +49,7 @@ func (s *standard) Panic(args ...interface{}) {
 
 	s.print(PanicLevel, args...)
 
-	panic(nil)
+	panic(fmt.Sprintf("%+v", args))
 }
 
 func (s *standard) IsPanicEnabled() bool {
