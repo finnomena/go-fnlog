@@ -40,6 +40,7 @@ func TestLog(t *testing.T) {
 	logger := fnlog.NewLogger()
 	logger.SetLevel(fnlog.TraceLevel)
 	logger.Debug("logging with struct")
+	logger.Debug("Hello, Logger\ntest new line\"double qoute\"")
 
 	var obj = &test{
 		logger: logger,
@@ -83,6 +84,7 @@ func TestLog(t *testing.T) {
 	text.Trace(object{key: "name", value: 100})
 	text.Trace(object{key: "name", value: 100}, object{key: "name2", value: 200})
 	text.Error(errors.New("oh my god"))
+	text.Info("Hello, Logger\ntest new line\"double qoute\"")
 
 	fnlog.Info("global again", "global again", "global again")
 

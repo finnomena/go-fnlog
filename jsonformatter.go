@@ -1,6 +1,7 @@
 package fnlog
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"strings"
@@ -28,7 +29,10 @@ func (p *JSONFormatter) Message(level LogLevel, fieldMap fields, args ...interfa
 		}
 		prefix := "%+v" + delimiter
 		prefix = strings.Repeat(prefix, len(args))
-		s += fmt.Sprintf(fmt.Sprintf(`"message":"%s",`, prefix[:len(prefix)-len(delimiter)]), args...)
+		var b bytes.Buffer
+		encoder := json.NewEncoder(&b)
+		encoder.Encode(fmt.Sprintf(prefix[:len(prefix)-len(delimiter)], args...))
+		s += fmt.Sprintf(`"message":"%s",`, b.String())
 	}
 
 	s = s[:len(s)-1] + "}\n"
