@@ -32,10 +32,10 @@ func (p *JSONFormatter) Message(level LogLevel, fieldMap fields, args ...interfa
 		var b bytes.Buffer
 		encoder := json.NewEncoder(&b)
 		encoder.Encode(fmt.Sprintf(prefix[:len(prefix)-len(delimiter)], args...))
-		s += fmt.Sprintf(`"message":"%s",`, b.String())
+		s += fmt.Sprintf(`"message":%s,`, b.String())
 	}
 
-	s = s[:len(s)-1] + "}\n"
+	s = s[:len(s)-2] + "}\n"
 
 	return s
 }
