@@ -14,6 +14,9 @@ func (w *responseWriter) Header() http.Header {
 }
 
 func (w *responseWriter) Write(b []byte) (int, error) {
+	if w.code == 0 {
+		w.code = http.StatusOK
+	}
 	return w.w.Write(b)
 }
 func (w *responseWriter) WriteHeader(statusCode int) {
