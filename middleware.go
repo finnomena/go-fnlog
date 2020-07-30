@@ -39,6 +39,7 @@ func LoggingMiddleware() func(http.Handler) http.Handler {
 			r = r.WithContext(ctx)
 
 			SetContext(r.Context())
+			defer DeleteKey(ctx)
 
 			AddField(ctx, "ip", r.RemoteAddr)
 			AddField(ctx, "method", r.Method)
@@ -55,7 +56,6 @@ func LoggingMiddleware() func(http.Handler) http.Handler {
 			AddField(ctx, "status", fnlogWriter.code)
 			Access(ctx)
 
-			defer DeleteKey(ctx)
 		})
 	}
 }
