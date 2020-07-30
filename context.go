@@ -28,5 +28,5 @@ func (s *standard) DeleteKey(key interface{}) {
 		delete(s.logctx, c)
 	}
 
-	delete(s.logkey, requestID)
+	delete(s.logkey, c.Value(requestID))
 }
