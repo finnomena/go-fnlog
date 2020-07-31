@@ -22,11 +22,12 @@ func DeleteKey(ctx context.Context) {
 
 func (s *standard) DeleteKey(key interface{}) {
 	c, ok := key.(context.Context)
+	if !ok {
+		delete(s.logkey, c)
+		return
+	}
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	if ok {
-		delete(s.logctx, c)
-	}
-
+	delete(s.logctx, c)
 	delete(s.logkey, c.Value(requestID))
 }
